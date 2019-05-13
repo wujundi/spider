@@ -18,6 +18,7 @@ import java.util.Collection;
 public class ResultBundleBuilder {
     private Logger LOG = LogManager.getLogger(ResultBundleBuilder.class);
 
+    // 当 supplier 里面封装的是一个对象的时候
     public <T> ResultBundle<T> bundle(String keyword, MySupplier<T> supplier) {
         ResultBundle<T> resultBundle;
         long start = System.currentTimeMillis();
@@ -31,6 +32,7 @@ public class ResultBundleBuilder {
         return resultBundle;
     }
 
+    // 当 supplier 里面封装的是一个列表的时候
     public <T> ResultListBundle<T> listBundle(String keyword, MySupplier<? extends Collection<T>> supplier) {
         ResultListBundle<T> resultBundle;
         long start = System.currentTimeMillis();
@@ -44,3 +46,6 @@ public class ResultBundleBuilder {
         return resultBundle;
     }
 }
+
+// 2019-04-29 23:23 不是很明白，这个 Bundle 的意义在哪里
+// 2019-05-05 22:47 Bundle 采用单例模式，更像是一个随时准备封装结果集的工厂；而 supplier 则像是为了使“类型”这个概念与 Bundle 松耦合而做的“载体”

@@ -44,3 +44,5 @@ public class ResultListBundle<T> extends ResultBundle<T> {
                 '}';
     }
 }
+
+// ResultBundle 的加强版，不止可以存一个 泛型的 result, 还可以存一个泛型的集合 resultList 了

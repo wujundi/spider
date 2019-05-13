@@ -1,5 +1,7 @@
 package com.gs.spider.model.utils;
 
+// 泛型类
+// 结果可以是任何数类型，总之，result 属性的类型也会随之变化的
 /**
  * 结果集
  * Created by gaoshen on 16/1/5.
@@ -123,3 +125,5 @@ public class ResultBundle<T> {
                 '}';
     }
 }
+
+// 2019-04-29 23:11

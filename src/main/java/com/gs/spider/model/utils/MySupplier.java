@@ -16,3 +16,5 @@ public interface MySupplier<T> {
      */
     T get() throws Exception;
 }
+
+// 2019-04-29 23:10 为了配合实现 lambda 表达式而专门设立的类

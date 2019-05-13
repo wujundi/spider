@@ -35,23 +35,27 @@ public class AsyncGather {
 
     /**
      * 获取任务列表,通过状态过滤
+     * 在getTask的基础上，通过lambda表达式，“流式”的过滤出满足 status 条件的 task 放入输出结果集
      *
      * @param state 任务状态
      * @return
      */
     public Collection<Task> getTasksFilterByState(State state, boolean containsExtraInfo) {
-        return taskManager.getTasks(containsExtraInfo).stream().filter(task -> task.getState() == state).collect(Collectors.toList());
+        return taskManager.getTasks(containsExtraInfo).stream()
+                .filter(task -> task.getState() == state).collect(Collectors.toList());
     }
 
     /**
      * 获取任务列表,通过时间状态过滤
+     * 思路与写法类似上面的 getTasksFilterByState 方法
      *
      * @param start 开始时间
      * @param end   结束时间
      * @return
      */
     public Collection<Task> getTasksFilterByTime(long start, long end, boolean containsExtraInfo) {
-        return taskManager.getTasks(containsExtraInfo).stream().filter(task -> task.getTime() > start && task.getTime() < end).collect(Collectors.toList());
+        return taskManager.getTasks(containsExtraInfo).stream()
+                .filter(task -> task.getTime() > start && task.getTime() < end).collect(Collectors.toList());
     }
 
     /**
@@ -102,3 +106,5 @@ public class AsyncGather {
         return taskManager.countByState(state);
     }
 }
+
+// 2019-04-28 23:35 AsyncGather提供对外方法，TaskManager 提供底层实现

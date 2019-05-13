@@ -45,7 +45,10 @@ public class TaskManager {
      */
     public Collection<Task> getTasks(boolean containsExtraInfo) {
         TASK_LOG.info("获取任务列表,包含额外信息:{}", containsExtraInfo);
+        // 先是三目运算符，将输入的布尔参数直接作为判断条件
         return containsExtraInfo ? taskMap.values() :
+                // 当不需要额外信息时，尝试进行浅拷贝(该拷贝不涉及其引用的对象，只是对task对象本身，进行一次克隆)
+                // 并且在浅拷贝的克隆体上删除 ExtraInfo
                 taskMap.values().stream().map(task -> {
                     Task t = null;
                     try {
@@ -80,6 +83,7 @@ public class TaskManager {
         return t;
     }
 
+    // 方法重载时，参数较少的版本往往是参数较多版本的代理人
     /**
      * 根据id获取task,显示任务详情
      *
@@ -131,6 +135,7 @@ public class TaskManager {
         task.addCallbackURL(callbackURL);
         task.setCallbackPara(callbackPara + "&taskId=" + taskId);
         task.setDescription("任务名称:" + name + "已初始化");
+        // 所谓初始化，不仅是创建一个 task 对象，还要将它放入 taskMap
         taskMap.put(task.getTaskId(), task);
         return task;
     }
@@ -251,10 +256,12 @@ public class TaskManager {
         return taskMap.entrySet().stream()
                 .filter(taskEntry ->
                         taskEntry.getValue().getName().equals(name)
+                                // 下面这两个 与 条件，是否可以理解为，只要正常的任务一般都会有调度周期及其时间单位
                                 && taskEntry.getValue().getPeriod() > 0 && taskEntry.getValue().getTimeUnit() != null
                 ).count() > 0;
     }
 
+    // 这写法有点吊，后面要重点看看
     /**
      * 根据条件查找是否有这样的任务
      *
@@ -262,10 +269,12 @@ public class TaskManager {
      * @return true 有这样的任务 false 没有这样的任务
      */
     public boolean findTaskBy(Function<Task, Boolean> function) {
+        // 确保参数非 null, 如果是 null 会报出 NullPointerException
         Preconditions.checkNotNull(function);
         return taskMap.entrySet().stream()
                 .filter(taskEntry ->
                         {
+                            // 用 function.apply 方法判断任务是否符合用户的输入
                             Boolean b = function.apply(taskEntry.getValue());
                             return b == null ? false : b;
                         }
@@ -285,10 +294,12 @@ public class TaskManager {
         task.getExtraInfo().clear();
         TASK_LOG.info("根据任务ID:{}删除任务", taskId);
         Preconditions.checkNotNull(task, "任务对象为空,taskId" + taskId);
+        // 表达式不成立的时候，就会抛出 IllegalArgumentException 异常
         Preconditions.checkArgument(task.getState() != State.RUNNING && task.getState() != State.INIT, "当前任务正在运行不可删除,状态:" + task.getState());
         taskMap.remove(taskId);
     }
 
+    // 从 taskMap 中 remove 掉处于指定状态的 task
     /**
      * 根据任务状态删除任务
      *
@@ -314,3 +325,5 @@ public class TaskManager {
         return taskMap.entrySet().stream().filter(taskEntry -> taskEntry.getValue().getState() == state).count();
     }
 }
+
+// 2019-04-29 22:56 提供针对 task 实体的一切操作，并维护一个 taskMap 用来存放一定量的 task
