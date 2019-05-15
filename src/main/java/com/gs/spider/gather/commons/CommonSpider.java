@@ -65,6 +65,7 @@ public class CommonSpider extends AsyncGather {
     //尽量先匹配长模板
     private static LinkedList<Pair<String, SimpleDateFormat>> datePattern = Lists.newLinkedList();
 
+    //  静态代码块会在类被加载的时候执行且仅会被执行一次，一般用来初始化静态变量和调用静态方法
     static {
         try {
             ignoredUrls = FileUtils.readLines(new File(CommonSpider.class.getClassLoader().getResource("ignoredUrls.txt").getFile()));
