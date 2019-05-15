@@ -62,21 +62,27 @@ public class CommonSpider extends AsyncGather {
     private static final String DYNAMIC_FIELD = "dynamic_fields";
     private static final String SPIDER_INFO = "spiderInfo";
     private static List<String> ignoredUrls;
+    
+    // 用来存储日期格式的列表
     //尽量先匹配长模板
     private static LinkedList<Pair<String, SimpleDateFormat>> datePattern = Lists.newLinkedList();
 
     //  静态代码块会在类被加载的时候执行且仅会被执行一次，一般用来初始化静态变量和调用静态方法
+    // 当 commonSpdier 类被加载的时候，取配置文件中，将【需要忽略的url关键词】与【日期格式】加载进内存 
     static {
         try {
             ignoredUrls = FileUtils.readLines(new File(CommonSpider.class.getClassLoader().getResource("ignoredUrls.txt").getFile()));
             LOG.info("加载普通网页爬虫url忽略名单成功,忽略名单:{}", ignoredUrls);
             try {
+                // 到对应的文件中去读入一些“年月日”，“时分秒”的的格式参数
                 String[] datePatternFile = FileUtils.readFileToString(
                         new File(CommonSpider.class.getClassLoader().getResource("datePattern.txt").getFile()),
                         "utf8"
                 ).replace("\r", "").split("=====\r?\n");
                 String[] dateList = datePatternFile[0].split("\n");
                 String[] timeList = datePatternFile[1].split("\n");
+                
+                // 两层循环，是将日期格式 与 时间格式 交叉匹配
                 for (String date : dateList) {
                     String[] dateEntry = date.split("##");
                     String dateReg = dateEntry[0];
@@ -113,6 +119,8 @@ public class CommonSpider extends AsyncGather {
     private NLPExtractor summaryExtractor;
     private NLPExtractor namedEntitiesExtractor;
     private StaticValue staticValue;
+    
+    // 我不知道这样写是不是高级，但我有点质疑这里使用 lambda 表达式反而使代码变得不易读了
     @SuppressWarnings("unchecked")
     private final PageConsumer spiderInfoPageConsumer = (page, info, task) -> {
         try {
